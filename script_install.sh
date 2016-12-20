@@ -16,6 +16,8 @@ IP1='10.10.10.254'
 PREFIX1=24
 MACADDR1='00:00:10:10:FE:FE'
 
+SCRIPTPWD=$PWD
+
 #что копировать
 #Создание временного файла с текущими названиями интерфейсов
 ls /etc/sysconfig/network-scripts/ifcfg-e* | cut -d : -f 1 > ethname
@@ -220,7 +222,51 @@ case "$item" in
         ;;
 esac
 
+#####Настройка интерфейсов#####
+
 confeth
+
+#####Установка драйверов сетевых плат Intel I210#####
+
+echo -n "Начать установку дополнительного драйверов для сетевых плат Intel I210? (y/n) "
+
+read item
+case "$item" in
+    y|Y) echo "Ввели «y», установка драйвера начата..."
+		if ! (lshw -c network | grep '5.3.5.4' ); then
+			echo 'Распаковка архива с драйвером...'
+			cd $SCRIPTPWD
+			tar -xf igb-5.3.5.4.tar.gz -C /tmp/intel/
+			echo 'Подготовка конфигурационных файлов...'
+			cd /etc/modprobe.d/
+			touch modprobe.conf
+			echo 'alias eno1 igb' >> modprobe.conf
+			echo 'alias eno2 igb' >> modprobe.conf
+			echo 'options igb RSS=1,1,1' >> modprobe.conf
+			echo 'Установка и настройка драйвера...'
+			cd /tmp/intel/
+			rmmod igb   #отключение сети
+			make uninstall
+			make clean
+			make install
+			modprobe igb RSS=1,1,1
+			if ! (lshw -c network | grep '5.3.5.4' ); then
+				tput setaf 1
+				echo "ОШИБКА!!! Новый драйвер не установлен!"
+				tput sgr0
+			else 
+				tput setaf 2
+				echo 'Установка драйвера для сетевых плат Intel I210 успешно завершена.'
+				tput sgr0
+			fi
+		else echo 'Актуальный драйвер уже установлен.'
+		fi
+		;;
+    n|N) tput setaf 1
+		echo "Ввели «n». Установка драйверов отменена!"
+		tput sgr0
+        ;;
+esac
 
 #####Настройка локали#####
 
