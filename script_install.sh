@@ -65,7 +65,7 @@ case $2 in
 	sed -i '/DNS1=/d' $1
     echo IPADDR=`echo $IP1` >> $1
 	echo PREFIX=`echo $PREFIX1` >> $1
-	echo MACADDR=`echo $MACADDR1` >> $1
+	#echo MACADDR=`echo $MACADDR1` >> $1
 	echo HWADDR=`sed -n 2p macname` >> $1
 	;;
 esac
@@ -192,6 +192,18 @@ start_inst glibc.i686 glibc-devel.i686 glibc-static.i686 libstdc++.i686 libstdc+
 start_inst cmake make gcc-c++
 start_inst cifs-utils
 start_inst lshw pciutils
+
+echo "Установка пакетов libpcap-1.8.1 и tcpdump-4.8.1" ## добавить проверки
+mkdir -p /tmp/vrem_install
+tar -xf libpcap-1.8.1.tar.gz -C /tmp/vrem_install
+cd /tmp/vrem_install/libpcap-1.8.1
+./configure
+make install
+cd $SCRIPTPWD
+tar -xf tcpdump-4.8.1.tar.gz -C /tmp/vrem_install
+cd /tmp/vrem_install/tcpdump-4.8.1
+./configure
+make install
 
 tput setaf 2
 echo "Установка дополнительного ПО завершена"
