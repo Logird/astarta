@@ -188,7 +188,7 @@ start_inst nano
 start_inst gdb
 start_inst kernel-devel kernel-headers
 start_inst htop atop iftop
-start_inst glibc.i686 glibc-devel.i686 glibc-static.i686 libstdc++.i686 libstdc++-devel.i686 compat-libstdc++-33.i686 libstdc++-static.i686
+start_inst glibc glibc-devel glibc-static libstdc++ libstdc++-devel compat-libstdc++-33 libstdc++-static
 start_inst cmake make gcc-c++
 start_inst cifs-utils
 start_inst lshw pciutils
