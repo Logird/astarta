@@ -86,7 +86,7 @@ j=0
 for i in `cat ./ethname`
 do
   if [ $j -lt 2 ]; then 
-	echo -n "Выберите тип настройки `echo $i` авто/вручную (a/m):  "
+	echo -n "Выберите тип настройки `echo $i` авто/вручную/пропустить (a/m/n):  "
 	read item
 	case "$item" in 
 	  a|A) echo "Автоматическая настройка `echo $i`"
@@ -95,6 +95,8 @@ do
 	  m|M) echo "Ручная настройка `echo $i`"
 	  sleep 2s
 	  confeth_manual $i $j
+	  ;;
+	  n|N) echo "Настройка `echo $i` пропущена"
 	  ;;
 	  *) echo "Введен неверный символ. Повтор шага...."
 	  confeth
@@ -194,17 +196,21 @@ start_inst cifs-utils
 start_inst lshw pciutils
 
 echo "Установка пакетов libpcap-1.8.1 и tcpdump-4.8.1" ## добавить проверки
+sleep 2s
 mkdir -p /tmp/vrem_install
 tar -xf libpcap-1.8.1.tar.gz -C /tmp/vrem_install
 cd /tmp/vrem_install/libpcap-1.8.1
 ./configure
-make install
+make -s install
+sleep 2s
+
 cd $SCRIPTPWD
 tar -xf tcpdump-4.8.1.tar.gz -C /tmp/vrem_install
 cd /tmp/vrem_install/tcpdump-4.8.1
 ./configure
-make install
-
+make -s install
+sleep 2s
+#if (yum repolist | grep -aq "libpcap") добавить проверку установки пакетов libpcap и tcpdump по номеру версии
 tput setaf 2
 echo "Установка дополнительного ПО завершена"
 tput sgr0
